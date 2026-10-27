@@ -129,7 +129,7 @@ def run_piper(items):
                 raw = Path(td) / "raw.wav"
                 with wave.open(str(raw), "wb") as wf:
                     voice.synthesize_wav(text, wf, syn_config=SynthesisConfig(length_scale=s["length_scale"]))
-                f = s["pitch"]
+                f = s.get("pitch_" + lang, s["pitch"])
                 af = f"asetrate={int(sr * f)},atempo={1 / f:.4f},aresample=44100," + FX[s["fx"]]
                 subprocess.run(
                     ["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-af", af,

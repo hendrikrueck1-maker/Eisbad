@@ -4,19 +4,27 @@
    "id": "tief",
    "label": "Tief – ruhig",
    "engine": "piper",
-   "model": { "de": "de_DE-thorsten-high", "en": "en_US-ryan-high" },
+   "model": {
+    "de": "de_DE-thorsten-high",
+    "en": "en_US-ryan-high"
+   },
    "length_scale": 1.2,
    "pitch": 0.9,
-   "fx": "warm"
+   "fx": "warm",
+   "pitch_en": 0.8
   },
   {
    "id": "rauchig",
    "label": "Rauchig – dunkel",
    "engine": "piper",
-   "model": { "de": "de_DE-thorsten-high", "en": "en_US-ryan-high" },
+   "model": {
+    "de": "de_DE-thorsten-high",
+    "en": "en_US-ryan-high"
+   },
    "length_scale": 1.25,
    "pitch": 0.84,
-   "fx": "smoky"
+   "fx": "smoky",
+   "pitch_en": 0.74
   },
   {
    "id": "killian",
