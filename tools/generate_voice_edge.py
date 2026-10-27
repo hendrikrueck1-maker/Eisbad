@@ -18,6 +18,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.request
 import wave
 from pathlib import Path
@@ -78,6 +79,22 @@ async def run_edge(items, parallel):
 
 
 # ---------- piper ----------
+def download(url, dest):
+    """Lädt eine Datei mit Wiederholung (Hugging Face antwortet gelegentlich mit 429)."""
+    req = urllib.request.Request(url, headers={"User-Agent": "eisbad-voice/1.0"})
+    for attempt in range(8):
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r, open(dest, "wb") as f:
+                while chunk := r.read(1 << 20):
+                    f.write(chunk)
+            return
+        except Exception as e:
+            wait = 15 * (attempt + 1)
+            print(f"   Download-Fehler ({e!r}), neuer Versuch in {wait} s")
+            time.sleep(wait)
+    raise RuntimeError(f"Download fehlgeschlagen: {url}")
+
+
 def fetch_model(name):
     MODELS.mkdir(parents=True, exist_ok=True)
     onnx = MODELS / f"{name}.onnx"
@@ -87,7 +104,7 @@ def fetch_model(name):
     base = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{locale.split('_')[0]}/{locale}/{voice}/{quality}/{name}"
     for ext in (".onnx.json", ".onnx"):
         print("Lade", base + ext)
-        urllib.request.urlretrieve(base + ext, MODELS / f"{name}{ext}")
+        download(base + ext, MODELS / f"{name}{ext}")
     return onnx
 
 
@@ -95,9 +112,12 @@ def run_piper(items):
     from piper import PiperVoice, SynthesisConfig
     failed = []
     voices = {}
+    broken = set()
     for n, (sid, lang, key, text, s, target) in enumerate(items, 1):
         try:
             name = s["model"][lang]
+            if name in broken:
+                raise RuntimeError(f"Modell {name} nicht verfügbar")
             if name not in voices:
                 onnx = fetch_model(name)
                 sr = json.loads((MODELS / f"{name}.onnx.json").read_text())["audio"]["sample_rate"]
@@ -116,6 +136,8 @@ def run_piper(items):
             ok = target.exists() and target.stat().st_size > 1000
         except Exception as e:
             print("   Fehler:", repr(e))
+            if "Download" in str(e):
+                broken.add(s["model"][lang])
             ok = False
         print(f"[piper {n}/{len(items)}] {sid}/{lang}/{key} {'ok' if ok else 'FEHLER'}")
         if not ok:
