@@ -1,0 +1,37 @@
+name: PWA veröffentlichen
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', 'app/src/main/assets/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Webseite zusammenstellen
+        run: |
+          mkdir site
+          cp -r web/. site/
+          cp app/src/main/assets/phrases.json site/
+          cp -r app/src/main/assets/voice site/voice
+          sed -i "s/__BUILD__/${GITHUB_SHA::7}/" site/sw.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

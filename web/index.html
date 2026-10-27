@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1620">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Eisbad</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="tabs">
+    <button data-view="start" class="on">Start</button>
+    <button data-view="history">Verlauf</button>
+  </nav>
+
+  <main>
+    <section id="view-start">
+      <h1>Eisbad</h1>
+      <p class="muted">Atmung, Atemhalten und Kälte – geführt per Stimme</p>
+      <button id="install" class="ghost" hidden>App installieren</button>
+
+      <div class="card warn">
+        <strong>Sicherheitshinweis</strong>
+        <p>Die Atemübung nie im oder direkt am Wasser und nie im Stehen machen – nur sitzend oder liegend an Land.
+          Nicht allein ins Eiswasser. Bei Herz-Kreislauf-Erkrankungen, Schwangerschaft oder Epilepsie vorher
+          ärztlich abklären. Bei Schwindel oder Kribbeln sofort abbrechen.</p>
+        <label class="check"><input type="checkbox" id="ack"> Gelesen und verstanden</label>
+      </div>
+
+      <div class="card">
+        <label for="profile">Profil</label>
+        <select id="profile"></select>
+        <div class="row">
+          <button id="profile-save" class="ghost">Als Profil speichern</button>
+          <button id="profile-del" class="ghost" hidden>Profil löschen</button>
+        </div>
+      </div>
+
+      <div id="controls"></div>
+
+      <div class="card">
+        <strong>Musik</strong>
+        <p id="music-name" class="muted">Keine Musik</p>
+        <div class="row">
+          <label class="btn ghost" for="music-file">Musik wählen</label>
+          <input type="file" id="music-file" accept="audio/*" hidden>
+          <button id="music-del" class="ghost" hidden>Entfernen</button>
+        </div>
+      </div>
+
+      <button id="start" class="primary" disabled>Start</button>
+    </section>
+
+    <section id="view-history" hidden>
+      <h1>Verlauf</h1>
+      <div id="stats" class="card"></div>
+      <div id="history-list"></div>
+      <div class="row">
+        <button id="exp-json" class="ghost">Export JSON</button>
+        <button id="exp-csv" class="ghost">Export CSV</button>
+        <button id="hist-clear" class="ghost">Alles löschen</button>
+      </div>
+    </section>
+
+    <section id="view-session" hidden class="center">
+      <div id="s-title" class="title"></div>
+      <div id="orb"></div>
+      <div id="s-big" class="big"></div>
+      <div id="s-sub" class="sub"></div>
+      <div class="bar"><div id="s-bar"></div></div>
+      <div class="row">
+        <button id="s-skip" class="primary" hidden>Weiter</button>
+        <button id="s-stop" class="ghost">Beenden</button>
+      </div>
+    </section>
+
+    <section id="view-done" hidden class="center">
+      <div class="title" id="d-title">Geschafft</div>
+      <div class="big">✓</div>
+      <div id="d-sum" class="sub"></div>
+      <button id="d-back" class="primary">Zurück</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

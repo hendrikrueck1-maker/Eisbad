@@ -43,3 +43,12 @@ Verlauf/Statistik, Atemhalte-Messung, Profile, App-Oberfläche in English.
 3. Actions > "Stimme erzeugen" > Run workflow, Stimme eintragen. Die Clips landen im Repo.
 4. Actions > "APK bauen" (startet nach jedem Push automatisch) > fertigen Lauf öffnen > Artifact `eisbad-apk` herunterladen.
 5. ZIP entpacken, `app-debug.apk` öffnen und installieren (Installation aus dieser Quelle erlauben).
+
+## PWA-Version (empfohlen fürs Handy)
+Ordner `web/` ist eine installierbare Web-App (offline-fähig, mit Verlauf, Profilen, Export).
+Sie wird bei jedem Push per GitHub Pages veröffentlicht (Workflow "PWA veröffentlichen"):
+`https://<benutzername>.github.io/eisbad/`
+Einmalig nötig: Repo auf **Public** stellen (Pages ist für private Repos nur im Bezahltarif verfügbar) und unter
+Settings → Pages → Source **GitHub Actions** wählen. Im Chrome-Menü "App installieren" bzw. "Zum Startbildschirm".
+Schnelltest: URL mit `?speed=20` öffnen, dann läuft eine Session 20-fach schneller.
+Stimme kostenlos neu erzeugen: `pip install edge-tts && python3 tools/generate_voice_edge.py --force`
