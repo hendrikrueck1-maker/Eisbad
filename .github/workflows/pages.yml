@@ -24,8 +24,10 @@ jobs:
       - name: Webseite zusammenstellen
         run: |
           mkdir site
-          cp index.html app.js style.css sw.js manifest.webmanifest phrases.json .nojekyll site/
-          cp -r icons voice site/
+          cp index.html app.js style.css sw.js manifest.webmanifest .nojekyll site/
+          cp app/src/main/assets/phrases.json app/src/main/assets/voices.json site/
+          cp -r icons site/
+          if [ -d app/src/main/assets/voice ]; then cp -r app/src/main/assets/voice site/voice; else mkdir site/voice; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

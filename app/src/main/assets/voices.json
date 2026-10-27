@@ -1,0 +1,36 @@
+{
+ "sets": [
+  {
+   "id": "florian",
+   "label": "Florian – warm",
+   "de": "de-DE-FlorianMultilingualNeural",
+   "en": "en-US-AndrewNeural",
+   "rate": "-8%",
+   "pitch": "-2Hz"
+  },
+  {
+   "id": "killian",
+   "label": "Killian – klar",
+   "de": "de-DE-KillianNeural",
+   "en": "en-GB-RyanNeural",
+   "rate": "-8%",
+   "pitch": "-4Hz"
+  },
+  {
+   "id": "seraphina",
+   "label": "Seraphina – sanft",
+   "de": "de-DE-SeraphinaMultilingualNeural",
+   "en": "en-US-AvaNeural",
+   "rate": "-6%",
+   "pitch": "+0Hz"
+  },
+  {
+   "id": "katja",
+   "label": "Katja – freundlich",
+   "de": "de-DE-KatjaNeural",
+   "en": "en-US-JennyNeural",
+   "rate": "-6%",
+   "pitch": "+0Hz"
+  }
+ ]
+}

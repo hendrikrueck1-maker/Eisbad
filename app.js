@@ -14,7 +14,7 @@
   const DEFAULTS = {
     rounds: 3, breaths: 30, breathSec: 3.5, holdSec: 90, holdOpen: false, recoverySec: 15,
     prepSec: 10, entrySec: 45, coldSec: 180, lang: 'de', voiceVol: 1, musicVol: 0.5,
-    breathCues: true, ack: false,
+    breathCues: true, ack: false, mode: 'both', voice: 'florian', theme: 'schiefer',
   };
   const SESSION_KEYS = ['rounds', 'breaths', 'breathSec', 'holdSec', 'holdOpen', 'recoverySec', 'entrySec', 'coldSec'];
   const PRESETS = {
@@ -23,7 +23,23 @@
     'Fortgeschritten': { rounds: 4, breaths: 40, breathSec: 3, holdSec: 120, holdOpen: true, recoverySec: 15, entrySec: 45, coldSec: 300 },
   };
 
+  const MODES = [
+    { id: 'both', label: 'Atmung + Eisbad', sub: 'ganzer Ablauf', start: 'Start' },
+    { id: 'breath', label: 'Nur Atmung', sub: 'ohne Wasser', start: 'Atemübung starten' },
+    { id: 'cold', label: 'Nur Eisbad', sub: 'Einstieg + Kälte', start: 'Eisbad starten' },
+  ];
+  const THEMES = [
+    { id: 'schiefer', label: 'Schiefer', c: '#f0b35a' },
+    { id: 'wald', label: 'Wald', c: '#7fd1a0' },
+    { id: 'beere', label: 'Beere', c: '#d58cff' },
+    { id: 'hell', label: 'Hell', c: '#0f7a6e' },
+  ];
+  const MODE = (id) => MODES.find((m) => m.id === id) || MODES[0];
+  let VOICE_SETS = [];
+
   let S = { ...DEFAULTS, ...jget('eisbad.settings', {}) };
+  if (!THEMES.some((t) => t.id === S.theme)) S.theme = DEFAULTS.theme;
+  if (!MODES.some((m) => m.id === S.mode)) S.mode = DEFAULTS.mode;
   let profiles = jget('eisbad.profiles', {});
   let history = jget('eisbad.history', []);
   let PH = {};
@@ -58,7 +74,7 @@
 
   // ---------- Einstellungen / UI ----------
   const GROUPS = [
-    { title: 'Atmung', items: [
+    { title: 'Atmung', modes: ['both', 'breath'], items: [
       { k: 'rounds', label: 'Runden', min: 1, max: 6, step: 1, f: (v) => v },
       { k: 'breaths', label: 'Atemzüge pro Runde', min: 20, max: 40, step: 5, f: (v) => v },
       { k: 'breathSec', label: 'Atemtempo pro Atemzug', min: 2.5, max: 6, step: 0.5, f: (v) => v.toFixed(1) + ' s' },
@@ -67,21 +83,24 @@
       { k: 'recoverySec', label: 'Erholungsatem halten', min: 10, max: 30, step: 5, f: (v) => v + ' s' },
       { k: 'breathCues', label: 'Atemtöne', type: 'check' },
     ] },
-    { title: 'Kälte', items: [
+    { title: 'Eisbad', modes: ['both', 'cold'], items: [
       { k: 'entrySec', label: 'Zeit bis zum Einstieg', min: 15, max: 120, step: 15, f: (v) => v + ' s' },
       { k: 'coldSec', label: 'Dauer im Wasser', min: 30, max: 600, step: 30, f: fmt },
     ] },
     { title: 'Stimme & Musik', items: [
       { k: 'lang', type: 'lang' },
+      { k: 'voice', type: 'voice' },
       { k: 'voiceVol', label: 'Lautstärke Stimme', min: 0, max: 1, step: 0.05, f: (v) => Math.round(v * 100) + ' %' },
       { k: 'musicVol', label: 'Lautstärke Musik', min: 0, max: 1, step: 0.05, f: (v) => Math.round(v * 100) + ' %' },
     ] },
+    { title: 'Aussehen', items: [{ k: 'theme', type: 'theme' }] },
   ];
 
   function renderControls() {
     const box = $('#controls');
     box.innerHTML = '';
     for (const g of GROUPS) {
+      if (g.modes && !g.modes.includes(S.mode)) continue;
       const h = document.createElement('h2'); h.textContent = g.title; box.appendChild(h);
       for (const it of g.items) {
         const d = document.createElement('div'); d.className = 'ctl';
@@ -94,7 +113,30 @@
           d.innerHTML = `<div class="chips"><button data-l="de">Deutsch</button><button data-l="en">English</button></div>`;
           const bs = d.querySelectorAll('button');
           const mark = () => bs.forEach((b) => b.classList.toggle('on', b.dataset.l === S.lang));
-          bs.forEach((b) => { b.onclick = () => { S.lang = b.dataset.l; saveSettings(); mark(); }; });
+          bs.forEach((b) => { b.onclick = () => { S.lang = b.dataset.l; saveSettings(); mark(); prefetchVoice(); preview(); }; });
+          mark();
+        } else if (it.type === 'voice') {
+          if (!VOICE_SETS.length) continue;
+          d.innerHTML = `<div class="sub-h">Stimme</div><div class="chips"></div><div class="row"><button type="button" class="ghost">▶ Probe hören</button></div>`;
+          const chips = d.querySelector('.chips');
+          const bs = VOICE_SETS.map((v) => {
+            const b = document.createElement('button'); b.type = 'button'; b.textContent = v.label; b.dataset.v = v.id;
+            chips.appendChild(b); return b;
+          });
+          const mark = () => bs.forEach((b) => b.classList.toggle('on', b.dataset.v === S.voice));
+          bs.forEach((b) => { b.onclick = () => { S.voice = b.dataset.v; saveSettings(); mark(); prefetchVoice(); preview(); }; });
+          d.querySelector('.row button').onclick = preview;
+          mark();
+        } else if (it.type === 'theme') {
+          d.innerHTML = `<div class="sub-h">Farbe</div><div class="chips"></div>`;
+          const chips = d.querySelector('.chips');
+          const bs = THEMES.map((t) => {
+            const b = document.createElement('button'); b.type = 'button'; b.dataset.t = t.id;
+            const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = t.c;
+            b.append(dot, t.label); chips.appendChild(b); return b;
+          });
+          const mark = () => bs.forEach((b) => b.classList.toggle('on', b.dataset.t === S.theme));
+          bs.forEach((b) => { b.onclick = () => { S.theme = b.dataset.t; saveSettings(); applyTheme(); mark(); }; });
           mark();
         } else {
           d.innerHTML = `<div class="head"><span></span><b></b></div><input type="range">`;
@@ -107,6 +149,28 @@
         box.appendChild(d);
       }
     }
+  }
+
+  function renderModes() {
+    const box = $('#modes');
+    box.innerHTML = '';
+    for (const m of MODES) {
+      const b = document.createElement('button'); b.type = 'button';
+      const t = document.createElement('b'); t.textContent = m.label;
+      const sm = document.createElement('small'); sm.textContent = m.sub;
+      b.append(t, sm);
+      b.classList.toggle('on', m.id === S.mode);
+      b.onclick = () => { S.mode = m.id; saveSettings(); renderModes(); renderControls(); };
+      box.appendChild(b);
+    }
+    $('#start').textContent = MODE(S.mode).start;
+  }
+
+  function applyTheme() {
+    document.documentElement.dataset.theme = S.theme;
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    const meta = document.querySelector('meta[name=theme-color]');
+    if (meta && bg) meta.setAttribute('content', bg);
   }
 
   function renderProfiles(selected) {
@@ -210,18 +274,46 @@
     }
     speaking = false;
   }
-  function playClip(key) {
+  let vgen = 0;
+  function tryPlay(url) {
     return new Promise((res) => {
       let done = false;
-      const fin = () => { if (!done) { done = true; curVoice = null; res(); } };
-      const a = new Audio(`voice/${S.lang}/${key}.mp3`);
+      const a = new Audio(url);
+      const fin = (ok) => { if (!done) { done = true; if (curVoice === a) curVoice = null; res(ok); } };
       curVoice = a;
       a.volume = S.voiceVol;
-      a.onended = fin; a.onpause = fin;
-      a.onerror = () => { tts(key).then(fin); };
+      a.onended = () => fin(true); a.onpause = () => fin(true); a.onerror = () => fin(false);
       const p = a.play();
-      if (p && p.catch) p.catch(() => { tts(key).then(fin); });
+      if (p && p.catch) p.catch(() => fin(false));
     });
+  }
+  // Reihenfolge: gewählte Stimme -> alte Standard-Clips -> Systemstimme
+  async function playClip(key) {
+    const g = vgen;
+    for (const u of [`voice/${S.voice}/${S.lang}/${key}.mp3`, `voice/${S.lang}/${key}.mp3`]) {
+      if (await tryPlay(u)) return;
+      if (g !== vgen) return;
+    }
+    if (g !== vgen) return;
+    await tts(key);
+  }
+  function preview() { silenceVoice(); say('cold_halftime'); }
+  async function prefetchVoice() {
+    const keys = Object.keys(PH);
+    if (!keys.length || !S.voice || !navigator.onLine) return;
+    const flag = `${S.voice}/${S.lang}/${keys.length}`;
+    const done = jget('eisbad.prefetched', {});
+    if (done[flag]) return;
+    // Existiert die Stimme überhaupt schon? Sonst nicht 50-mal ins Leere fragen.
+    const probe = await fetch(`voice/${S.voice}/${S.lang}/${keys[0]}.mp3`).then((r) => r.status === 200).catch(() => false);
+    if (!probe) return;
+    let ok = true;
+    for (let i = 0; i < keys.length; i += 6) {
+      const rs = await Promise.all(keys.slice(i, i + 6).map((k) =>
+        fetch(`voice/${S.voice}/${S.lang}/${k}.mp3`).then((r) => r.status === 200).catch(() => false)));
+      if (rs.includes(false)) ok = false;
+    }
+    if (ok) { done[flag] = 1; jset('eisbad.prefetched', done); }
   }
   function tts(key) {
     return new Promise((res) => {
@@ -239,6 +331,7 @@
     while ((speaking || vq.length) && performance.now() < end) await new Promise((r) => setTimeout(r, 100));
   }
   function silenceVoice() {
+    vgen++;
     vq.length = 0;
     if (curVoice) curVoice.pause();
     try { speechSynthesis.cancel(); } catch { /* egal */ }
@@ -298,18 +391,21 @@
     return cues;
   }
 
-  async function runSession() {
+  async function runSession(mode) {
+    const doBreath = mode !== 'cold', doCold = mode !== 'breath';
     let t = clock();
     const step = async (ms) => { t += ms; await until(t); };
     const resync = () => { t = clock(); };
 
-    say('intro');
-    for (let i = S.prepSec; i > 0; i--) {
-      ui('PREP', 'Vorbereitung', i, 'Setz dich bequem hin', 1 - i / S.prepSec);
-      await step(1000);
+    if (doBreath) {
+      say('intro');
+      for (let i = S.prepSec; i > 0; i--) {
+        ui('PREP', 'Vorbereitung', i, 'Setz dich bequem hin', 1 - i / S.prepSec);
+        await step(1000);
+      }
     }
 
-    for (let r = 1; r <= S.rounds; r++) {
+    for (let r = 1; doBreath && r <= S.rounds; r++) {
       const title = `Runde ${r} von ${S.rounds}`;
       say(r === S.rounds && S.rounds > 1 ? 'round_last' : 'round_' + r);
       await step(3000);
@@ -360,6 +456,9 @@
       say('recovery_end');
       await step(3000);
     }
+    if (doBreath && !doCold) say('breath_done');
+
+    if (!doCold) return;
 
     // Einstieg
     say('entry_prepare');
@@ -383,7 +482,8 @@
   async function startSession() {
     if (R.running) return;
     R.running = true; R.abort = false; R.skip = false;
-    R.log = { id: Date.now(), date: new Date().toISOString(), rounds: S.rounds, holds: [], coldSec: 0, completed: false };
+    const mode = S.mode;
+    R.log = { id: Date.now(), date: new Date().toISOString(), mode, rounds: mode === 'cold' ? 0 : S.rounds, holds: [], coldSec: 0, completed: false };
 
     // Audio innerhalb der Tipp-Geste freischalten
     try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); await actx.resume(); } catch { actx = null; }
@@ -400,7 +500,7 @@
     } catch { /* egal */ }
 
     showView('session');
-    try { await runSession(); R.log.completed = true; await drainVoice(20000); } catch (e) { if (e !== ABORT) console.error(e); }
+    try { await runSession(mode); R.log.completed = true; await drainVoice(20000); } catch (e) { if (e !== ABORT) console.error(e); }
 
     silenceVoice();
     musicEl.pause(); keepEl.pause();
@@ -412,7 +512,8 @@
     if (L.completed) {
       const parts = [];
       if (L.holds.length) parts.push('Atemhalten: ' + L.holds.map(fmt).join(' · '));
-      parts.push('Kälte: ' + fmt(L.coldSec));
+      if (mode !== 'breath') parts.push('Kälte: ' + fmt(L.coldSec));
+      parts.push(mode === 'breath' ? 'Atme jetzt ruhig weiter.' : 'Wärme dich langsam auf.');
       $('#d-sum').innerHTML = '';
       parts.forEach((p) => { const d = document.createElement('div'); d.textContent = p; $('#d-sum').appendChild(d); });
       showView('done');
@@ -444,10 +545,18 @@
     history.forEach((h) => {
       const d = document.createElement('div'); d.className = 'hist';
       const dt = new Date(h.date).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
-      const a = document.createElement('b'); a.textContent = dt + (h.completed ? '' : ' (abgebrochen)');
-      const b = document.createElement('div'); b.textContent = `Atemhalten: ${h.holds.length ? h.holds.map(fmt).join(' · ') : '–'}`;
-      const c = document.createElement('div'); c.textContent = `Kälte: ${fmt(h.coldSec || 0)}`;
-      d.append(a, b, c); list.appendChild(d);
+      const m = h.mode || 'both';
+      const a = document.createElement('b'); a.textContent = `${dt} · ${MODE(m).label}` + (h.completed ? '' : ' (abgebrochen)');
+      d.append(a);
+      if (m !== 'cold') {
+        const b = document.createElement('div'); b.textContent = `Atemhalten: ${h.holds.length ? h.holds.map(fmt).join(' · ') : '–'}`;
+        d.append(b);
+      }
+      if (m !== 'breath') {
+        const c = document.createElement('div'); c.textContent = `Kälte: ${fmt(h.coldSec || 0)}`;
+        d.append(c);
+      }
+      list.appendChild(d);
     });
   }
   function download(name, type, text) {
@@ -457,14 +566,21 @@
   }
   $('#exp-json').onclick = () => download('eisbad-verlauf.json', 'application/json', JSON.stringify(history, null, 1));
   $('#exp-csv').onclick = () => download('eisbad-verlauf.csv', 'text/csv',
-    'datum;runden;atemhalten_sekunden;kaelte_sekunden;abgeschlossen\n' +
-    history.map((h) => `${h.date};${h.rounds};${h.holds.join(',')};${h.coldSec || 0};${h.completed ? 'ja' : 'nein'}`).join('\n'));
+    'datum;modus;runden;atemhalten_sekunden;kaelte_sekunden;abgeschlossen\n' +
+    history.map((h) => `${h.date};${h.mode || 'both'};${h.rounds};${h.holds.join(',')};${h.coldSec || 0};${h.completed ? 'ja' : 'nein'}`).join('\n'));
   $('#hist-clear').onclick = () => { if (confirm('Gesamten Verlauf löschen?')) { history = []; jset('eisbad.history', history); renderHistory(); } };
 
   // ---------- Start ----------
+  applyTheme();
+  renderModes();
   renderControls();
   renderProfiles('');
-  fetch('phrases.json').then((r) => r.json()).then((j) => { PH = j; }).catch(() => {});
+  fetch('phrases.json').then((r) => r.json()).then((j) => { PH = j; prefetchVoice(); }).catch(() => {});
+  fetch('voices.json').then((r) => r.json()).then((j) => {
+    VOICE_SETS = j.sets || [];
+    if (!VOICE_SETS.some((v) => v.id === S.voice) && VOICE_SETS.length) { S.voice = VOICE_SETS[0].id; saveSettings(); }
+    renderControls(); prefetchVoice();
+  }).catch(() => {});
   kvGet('music').then((f) => { if (f) setMusic(f); });
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('sw.js').catch(() => {});

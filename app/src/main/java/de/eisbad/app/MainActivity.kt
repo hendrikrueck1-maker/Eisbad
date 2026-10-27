@@ -34,7 +34,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,42 +41,39 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme(
-                colorScheme = darkColorScheme(
-                    primary = Color(0xFF5CC8FF),
-                    background = Color(0xFF0B1620),
-                    surface = Color(0xFF0B1620),
-                )
-            ) {
-                Surface(Modifier.fillMaxSize()) { App() }
+            var theme by remember { mutableStateOf(AppSettings.load(this@MainActivity).theme) }
+            MaterialTheme(colorScheme = colorSchemeFor(theme)) {
+                Surface(Modifier.fillMaxSize()) { App { theme = it } }
             }
         }
     }
 }
 
 @Composable
-fun App() {
+fun App(onThemeChange: (String) -> Unit) {
     val ui by SessionBus.state.collectAsState()
     when {
         ui.running -> SessionScreen(ui)
         ui.phase == Phase.DONE -> DoneScreen(ui)
-        else -> SettingsScreen()
+        else -> SettingsScreen(onThemeChange)
     }
 }
 
@@ -119,11 +115,47 @@ fun SettingSlider(
     }
 }
 
+/** Auswahl-Chips in zwei Spalten (Modus, Stimme, Farbe). */
 @Composable
-fun SettingsScreen() {
+fun ChipGrid(items: List<Pair<String, String>>, selected: String, onSelect: (String) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items.chunked(2).forEach { row ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                row.forEach { item ->
+                    FilterChip(
+                        selected = selected == item.first,
+                        onClick = { onSelect(item.first) },
+                        label = { Text(item.second, maxLines = 1) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+private val MODE_ITEMS = listOf(
+    "both" to "Atmung + Eisbad",
+    "breath" to "Nur Atmung",
+    "cold" to "Nur Eisbad",
+)
+
+@Composable
+fun SettingsScreen(onThemeChange: (String) -> Unit) {
     val ctx = LocalContext.current
     var s by remember { mutableStateOf(AppSettings.load(ctx)) }
     LaunchedEffect(s) { s.save(ctx) }
+
+    val voiceSets = remember { loadVoiceSets(ctx) }
+    val scope = rememberCoroutineScope()
+    val previewer = remember { VoicePlayer(ctx, PhraseBook(ctx)) }
+    var previewJob by remember { mutableStateOf<Job?>(null) }
+    DisposableEffect(Unit) { onDispose { previewJob?.cancel(); previewer.release() } }
+    fun preview(voice: String, lang: String) {
+        previewJob?.cancel()
+        previewJob = scope.launch { previewer.play("cold_halftime", lang, voice, s.voiceVol) }
+    }
 
     val musicPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -157,6 +189,7 @@ fun SettingsScreen() {
     ) {
         Text("Eisbad", fontSize = 32.sp, fontWeight = FontWeight.Bold)
         Text("Atmung, Atemhalten und Kälte – geführt per Stimme")
+        ChipGrid(MODE_ITEMS, s.mode) { s = s.copy(mode = it) }
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -177,36 +210,56 @@ fun SettingsScreen() {
             }
         }
 
-        Text("Atmung", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-        SettingSlider("Runden", "${s.rounds}", s.rounds.toFloat(), 1f..6f, 4) {
-            s = s.copy(rounds = it.roundToInt())
-        }
-        SettingSlider("Atemzüge pro Runde", "${s.breaths}", s.breaths.toFloat(), 20f..40f, 3) {
-            s = s.copy(breaths = (it / 5).roundToInt() * 5)
-        }
-        SettingSlider("Atemtempo (pro Atemzug)", "%.1f s".format(s.breathSec), s.breathSec, 2.5f..6f, 6) {
-            s = s.copy(breathSec = (it * 2).roundToInt() / 2f)
-        }
-        SettingSlider("Atem anhalten", fmt(s.holdSec), s.holdSec.toFloat(), 30f..300f, 17) {
-            s = s.copy(holdSec = (it / 15).roundToInt() * 15)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(checked = s.breathCues, onCheckedChange = { s = s.copy(breathCues = it) })
-            Text("  Atemtöne (ein/aus)")
+        if (s.mode != "cold") {
+            Text("Atmung", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+            SettingSlider("Runden", "${s.rounds}", s.rounds.toFloat(), 1f..6f, 4) {
+                s = s.copy(rounds = it.roundToInt())
+            }
+            SettingSlider("Atemzüge pro Runde", "${s.breaths}", s.breaths.toFloat(), 20f..40f, 3) {
+                s = s.copy(breaths = (it / 5).roundToInt() * 5)
+            }
+            SettingSlider("Atemtempo (pro Atemzug)", "%.1f s".format(s.breathSec), s.breathSec, 2.5f..6f, 6) {
+                s = s.copy(breathSec = (it * 2).roundToInt() / 2f)
+            }
+            SettingSlider("Atem anhalten", fmt(s.holdSec), s.holdSec.toFloat(), 30f..300f, 17) {
+                s = s.copy(holdSec = (it / 15).roundToInt() * 15)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(checked = s.breathCues, onCheckedChange = { s = s.copy(breathCues = it) })
+                Text("  Atemtöne (ein/aus)")
+            }
         }
 
-        Text("Kälte", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-        SettingSlider("Zeit bis zum Einstieg", "${s.entrySec} s", s.entrySec.toFloat(), 15f..120f, 6) {
-            s = s.copy(entrySec = (it / 15).roundToInt() * 15)
-        }
-        SettingSlider("Dauer im Wasser", fmt(s.coldSec), s.coldSec.toFloat(), 30f..600f, 18) {
-            s = s.copy(coldSec = (it / 30).roundToInt() * 30)
+        if (s.mode != "breath") {
+            Text("Eisbad", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+            SettingSlider("Zeit bis zum Einstieg", "${s.entrySec} s", s.entrySec.toFloat(), 15f..120f, 6) {
+                s = s.copy(entrySec = (it / 15).roundToInt() * 15)
+            }
+            SettingSlider("Dauer im Wasser", fmt(s.coldSec), s.coldSec.toFloat(), 30f..600f, 18) {
+                s = s.copy(coldSec = (it / 30).roundToInt() * 30)
+            }
         }
 
         Text("Stimme & Musik", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = s.lang == "de", onClick = { s = s.copy(lang = "de") }, label = { Text("Deutsch") })
-            FilterChip(selected = s.lang == "en", onClick = { s = s.copy(lang = "en") }, label = { Text("English") })
+            FilterChip(
+                selected = s.lang == "de",
+                onClick = { s = s.copy(lang = "de"); preview(s.voice, "de") },
+                label = { Text("Deutsch") },
+            )
+            FilterChip(
+                selected = s.lang == "en",
+                onClick = { s = s.copy(lang = "en"); preview(s.voice, "en") },
+                label = { Text("English") },
+            )
+        }
+        if (voiceSets.isNotEmpty()) {
+            Text("Stimme")
+            ChipGrid(voiceSets.map { it.id to it.label }, s.voice) {
+                s = s.copy(voice = it)
+                preview(it, s.lang)
+            }
+            OutlinedButton(onClick = { preview(s.voice, s.lang) }) { Text("▶ Probe hören") }
         }
         SettingSlider("Lautstärke Stimme", "${(s.voiceVol * 100).roundToInt()} %", s.voiceVol, 0f..1f, 0) {
             s = s.copy(voiceVol = it)
@@ -220,6 +273,12 @@ fun SettingsScreen() {
             if (s.musicUri.isNotBlank()) {
                 OutlinedButton(onClick = { s = s.copy(musicUri = "") }) { Text("Entfernen") }
             }
+        }
+
+        Text("Aussehen", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+        ChipGrid(THEME_OPTIONS.map { it.id to it.label }, s.theme) {
+            s = s.copy(theme = it)
+            onThemeChange(it)
         }
 
         Spacer(Modifier.height(12.dp))
@@ -236,7 +295,16 @@ fun SettingsScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-        ) { Text("Start", fontSize = 20.sp) }
+        ) {
+            Text(
+                when (s.mode) {
+                    "breath" -> "Atemübung starten"
+                    "cold" -> "Eisbad starten"
+                    else -> "Start"
+                },
+                fontSize = 20.sp,
+            )
+        }
         Spacer(Modifier.height(24.dp))
     }
 }

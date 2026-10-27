@@ -74,7 +74,7 @@ class SessionService : Service() {
         voiceJob = scope.launch {
             for (key in q) {
                 music?.duck(true)
-                voice?.play(key, s.lang, s.voiceVol)
+                voice?.play(key, s.lang, s.voice, s.voiceVol)
                 music?.duck(false)
             }
         }
@@ -96,7 +96,8 @@ class SessionService : Service() {
             voiceJob?.join()
             SessionBus.state.value = UiState(
                 running = false, phase = Phase.DONE, title = "Geschafft", big = "✓",
-                sub = "Wärme dich langsam auf.", progress = 1f,
+                sub = if (s.mode == "breath") "Atme ruhig weiter." else "Wärme dich langsam auf.",
+                progress = 1f,
             )
             cleanup()
             stopSelf()

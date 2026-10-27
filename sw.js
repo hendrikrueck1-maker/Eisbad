@@ -1,11 +1,12 @@
-const CACHE = 'eisbad-v1';
-const CORE = ['./', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'phrases.json',
+const CACHE = 'eisbad-v2';
+const CORE = ['./', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'phrases.json', 'voices.json',
   'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const c = await caches.open(CACHE);
     await c.addAll(CORE);
+    // Alte Standard-Clips (Fallback) vorab laden; die gewählte Stimme lädt die Seite selbst nach.
     try {
       const p = await (await fetch('phrases.json')).json();
       const urls = [];

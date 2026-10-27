@@ -17,6 +17,9 @@ data class AppSettings(
     val voiceVol: Float = 1.0f,
     val breathCues: Boolean = true,
     val acknowledged: Boolean = false,
+    val mode: String = "both",
+    val voice: String = "florian",
+    val theme: String = "schiefer",
 ) {
     fun save(ctx: Context) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
@@ -34,6 +37,9 @@ data class AppSettings(
             .putFloat("voiceVol", voiceVol)
             .putBoolean("breathCues", breathCues)
             .putBoolean("acknowledged", acknowledged)
+            .putString("mode", mode)
+            .putString("voice", voice)
+            .putString("theme", theme)
             .apply()
     }
 
@@ -58,6 +64,9 @@ data class AppSettings(
                 voiceVol = p.getFloat("voiceVol", d.voiceVol),
                 breathCues = p.getBoolean("breathCues", d.breathCues),
                 acknowledged = p.getBoolean("acknowledged", d.acknowledged),
+                mode = p.getString("mode", d.mode) ?: d.mode,
+                voice = p.getString("voice", d.voice) ?: d.voice,
+                theme = p.getString("theme", d.theme) ?: d.theme,
             )
         }
     }

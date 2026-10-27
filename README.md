@@ -8,22 +8,29 @@ läuft auch bei gesperrtem Bildschirm).
 1. Ordner `eisbad` in Android Studio öffnen (Ladybug oder neuer, JDK 17). Gradle-Sync abwarten.
 2. Handy per USB anschließen oder Emulator wählen, dann **Run**.
 
-## Stimme erzeugen (einmalig)
-Die App nutzt vorab erzeugte Clips aus `app/src/main/assets/voice/<de|en>/<key>.mp3`.
-Fehlt ein Clip, spricht die Android-Systemstimme (tiefer gestellt) als Notlösung.
+## Modi
+Oben in der App wählen: **Atmung + Eisbad** (ganzer Ablauf), **Nur Atmung** (Runden, Atemhalten,
+Erholungsatem, danach Abschluss-Ansage) oder **Nur Eisbad** (Einstiegszeit, dann Kälte-Timer).
+Es werden nur die Einstellungen des gewählten Modus angezeigt. Der Verlauf merkt sich den Modus.
 
-```
-# ElevenLabs: in der Voice Library eine tiefe, ruhige Männerstimme wählen, voice_id kopieren
-export ELEVENLABS_API_KEY=...
-export ELEVENLABS_VOICE_ID=...
-python3 tools/generate_voice.py --provider elevenlabs --lang de en
+## Aussehen
+Vier Farbthemen (Schiefer, Wald, Beere, Hell) unter **Aussehen**; Auswahl gilt sofort.
 
-# oder OpenAI (Stimme "onyx" ist tief)
-export OPENAI_API_KEY=...
-python3 tools/generate_voice.py --provider openai --voice onyx --lang de en
-```
-Danach die App neu bauen. Texte ändern: `app/src/main/assets/phrases.json` bearbeiten und das
-Skript mit `--force` erneut laufen lassen. 54 Ansagen × 2 Sprachen = 108 kurze Clips.
+## Stimmen
+Die Stimmen stehen in `app/src/main/assets/voices.json` (id, Anzeigename, edge-tts-Stimme für de/en,
+Tempo, Tonhöhe). In der App unter **Stimme & Musik** wählen, jede Auswahl spielt eine Hörprobe.
+Die Clips liegen in `app/src/main/assets/voice/<stimme>/<de|en>/<key>.mp3`. Fehlt ein Clip, nimmt die
+App die alten Standard-Clips (`voice/<de|en>/<key>.mp3`) und zuletzt die Systemstimme.
+
+**Kostenlos erzeugen (nur mit dem Handy):** GitHub > Actions > "Stimmen erzeugen (kostenlos)" >
+Run workflow (Standard `all` erzeugt alle Stimmen). Danach baut der Workflow PWA und APK automatisch neu.
+Neue Texte: `phrases.json` bearbeiten, Workflow erneut starten. Anderes Tempo/andere Stimme: in
+`voices.json` ändern und den Workflow mit `force = true` starten.
+
+Lokal: `pip install edge-tts && python3 tools/generate_voice_edge.py --set florian`.
+
+Alternative mit Bezahldiensten (alte Clips in `voice/<de|en>/`): `tools/generate_voice.py`
+(ElevenLabs oder OpenAI), Workflow "Stimme erzeugen".
 
 ## Wie sich die Ansagen anpassen
 - Atmung: Start, ein Drittel, zwei Drittel, letzte Atemzüge (passt zur Zahl der Atemzüge)
@@ -49,4 +56,4 @@ Die Dateien im Repo-Root (index.html, app.js, sw.js ...) sind eine installierbar
 GitHub Pages (Branch main, Root) liefert sie direkt aus:
 `https://<benutzername>.github.io/eisbad/`
 Schnelltest: URL mit `?speed=20` öffnen, dann läuft eine Session 20-fach schneller.
-Stimme kostenlos neu erzeugen: `pip install edge-tts && python3 tools/generate_voice_edge.py --force`
+Nach Updates die App einmal schließen und neu öffnen (der Service Worker lädt die neue Version im Hintergrund).

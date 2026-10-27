@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Kostenlose Variante: erzeugt alle Ansagen mit Microsoft-Neural-Stimmen (edge-tts).
-Kein Account und kein API-Key nötig.
+"""Kostenlose Stimmen: erzeugt alle Ansagen mit Microsoft-Neural-Stimmen (edge-tts).
+Kein Account und kein API-Key nötig. Die Stimmen stehen in app/src/main/assets/voices.json,
+jede Stimme landet in einem eigenen Ordner: voice/<stimme>/<de|en>/<key>.mp3
 
   pip install edge-tts
-  python3 tools/generate_voice_edge.py                 # alles, nur fehlende Clips
-  python3 tools/generate_voice_edge.py --force         # alles neu
-  python3 tools/generate_voice_edge.py --pitch -14Hz   # noch tiefer
+  python3 tools/generate_voice_edge.py                    # alle Stimmen, nur fehlende Clips
+  python3 tools/generate_voice_edge.py --set florian      # nur eine Stimme
+  python3 tools/generate_voice_edge.py --force            # alles neu
 
 Hinweis: edge-tts nutzt den Vorlese-Dienst von Microsoft Edge (inoffiziell, für den
 persönlichen Gebrauch gedacht).
@@ -19,9 +20,10 @@ from pathlib import Path
 import edge_tts
 
 ROOT = Path(__file__).resolve().parent.parent
-PHRASES = ROOT / "app/src/main/assets/phrases.json"
-OUT = ROOT / "app/src/main/assets/voice"
-VOICES = {"de": "de-DE-ConradNeural", "en": "en-US-ChristopherNeural"}
+ASSETS = ROOT / "app/src/main/assets"
+PHRASES = ASSETS / "phrases.json"
+VOICES = ASSETS / "voices.json"
+OUT = ASSETS / "voice"
 
 
 async def one(text, voice, rate, pitch, target):
@@ -33,32 +35,51 @@ async def one(text, voice, rate, pitch, target):
         except Exception as e:  # Netzwerk-Hänger
             print("   Fehler:", e)
         await asyncio.sleep(2 * (attempt + 1))
+    target.unlink(missing_ok=True)
     return False
 
 
 async def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--set", nargs="+", default=["all"], help="Stimmen-IDs aus voices.json oder 'all'")
     ap.add_argument("--lang", nargs="+", default=["de", "en"])
-    ap.add_argument("--rate", default="-12%", help="Tempo, z. B. -12%% = etwas langsamer")
-    ap.add_argument("--pitch", default="-10Hz", help="Tonhöhe, negativ = tiefer")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--parallel", type=int, default=4)
     a = ap.parse_args()
+
+    sets = {s["id"]: s for s in json.loads(VOICES.read_text(encoding="utf-8"))["sets"]}
+    ids = list(sets) if "all" in a.set else a.set
+    for i in ids:
+        if i not in sets:
+            sys.exit(f"Unbekannte Stimme '{i}'. Verfügbar: {', '.join(sets)}")
 
     phrases = json.loads(PHRASES.read_text(encoding="utf-8"))
     todo = []
-    for lang in a.lang:
-        for key, texts in phrases.items():
-            target = OUT / lang / f"{key}.mp3"
-            if target.exists() and not a.force:
-                continue
-            todo.append((lang, key, texts[lang], target))
+    for sid in ids:
+        s = sets[sid]
+        for lang in a.lang:
+            for key, texts in phrases.items():
+                target = OUT / sid / lang / f"{key}.mp3"
+                if target.exists() and not a.force:
+                    continue
+                todo.append((sid, lang, key, texts[lang], s[lang], s["rate"], s["pitch"], target))
     print(f"{len(todo)} Clips")
-    for i, (lang, key, text, target) in enumerate(todo, 1):
-        target.parent.mkdir(parents=True, exist_ok=True)
-        print(f"[{i}/{len(todo)}] {lang}/{key}")
-        if not await one(text, VOICES[lang], a.rate, a.pitch, target):
-            sys.exit(f"Abbruch bei {lang}/{key}")
-        await asyncio.sleep(0.2)
+
+    sem = asyncio.Semaphore(a.parallel)
+    failed = []
+
+    async def work(n, item):
+        sid, lang, key, text, voice, rate, pitch, target = item
+        async with sem:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            ok = await one(text, voice, rate, pitch, target)
+            print(f"[{n}/{len(todo)}] {sid}/{lang}/{key} {'ok' if ok else 'FEHLER'}")
+            if not ok:
+                failed.append(f"{sid}/{lang}/{key}")
+
+    await asyncio.gather(*(work(n, it) for n, it in enumerate(todo, 1)))
+    if failed:
+        sys.exit(f"{len(failed)} Clips fehlgeschlagen, bitte Lauf wiederholen: {', '.join(failed[:10])} ...")
     print("Fertig.")
 
 

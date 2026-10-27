@@ -22,9 +22,23 @@ class PhraseBook(ctx: Context) {
         root.optJSONObject(key)?.optString(lang)?.takeIf { it.isNotBlank() }
 }
 
+/** Wählbare Stimmen (assets/voices.json); die Clips liegen in assets/voice/<id>/<lang>/<key>.mp3. */
+data class VoiceSet(val id: String, val label: String)
+
+fun loadVoiceSets(ctx: Context): List<VoiceSet> = try {
+    val root = ctx.assets.open("voices.json").bufferedReader().use { JSONObject(it.readText()) }
+    val arr = root.getJSONArray("sets")
+    List(arr.length()) { i ->
+        val o = arr.getJSONObject(i)
+        VoiceSet(o.getString("id"), o.getString("label"))
+    }
+} catch (e: Exception) {
+    emptyList()
+}
+
 /**
- * Spielt Ansagen ab. Bevorzugt die vorab generierten Clips (assets/voice/<lang>/<key>.mp3),
- * fällt sonst auf die Android-Systemstimme zurück.
+ * Spielt Ansagen ab. Reihenfolge: gewählte Stimme (assets/voice/<stimme>/<lang>/<key>.mp3),
+ * dann die alten Standard-Clips (assets/voice/<lang>/<key>.mp3), zuletzt die Android-Systemstimme.
  */
 class VoicePlayer(private val ctx: Context, private val book: PhraseBook) {
     private var tts: TextToSpeech? = null
@@ -34,7 +48,8 @@ class VoicePlayer(private val ctx: Context, private val book: PhraseBook) {
         tts = TextToSpeech(ctx) { status -> ttsReady = status == TextToSpeech.SUCCESS }
     }
 
-    suspend fun play(key: String, lang: String, volume: Float) {
+    suspend fun play(key: String, lang: String, voice: String, volume: Float) {
+        if (voice.isNotBlank() && playAsset("voice/$voice/$lang/$key.mp3", volume)) return
         if (playAsset("voice/$lang/$key.mp3", volume)) return
         val text = book.text(key, lang) ?: return
         speakTts(text, lang, volume)

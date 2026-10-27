@@ -1,0 +1,49 @@
+name: Stimmen erzeugen (kostenlos)
+on:
+  workflow_dispatch:
+    inputs:
+      voices:
+        description: "Stimmen-IDs aus voices.json (florian killian seraphina katja) oder all"
+        default: "all"
+      force:
+        description: "Alle Clips neu erzeugen (true/false)"
+        default: "false"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: voice-edge
+  cancel-in-progress: false
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install edge-tts
+      - name: Clips erzeugen
+        run: |
+          FORCE=""
+          if [ "${{ inputs.force }}" = "true" ]; then FORCE="--force"; fi
+          python3 tools/generate_voice_edge.py --set ${{ inputs.voices }} $FORCE
+      - name: Clips einchecken
+        if: always()
+        run: |
+          git config user.name "eisbad-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add app/src/main/assets/voice
+          git commit -m "Stimmen erzeugt" || echo "nichts zu committen"
+          git pull --rebase origin main
+          git push
+      - name: PWA und APK neu bauen
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --ref main
+          gh workflow run build.yml --ref main

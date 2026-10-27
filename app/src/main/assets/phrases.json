@@ -214,5 +214,9 @@
  "cold_end": {
   "de": "Zeit. Hervorragend gemacht. Steig jetzt langsam und sicher aus dem Wasser und wärme dich in Ruhe auf.",
   "en": "Time. Well done. Now step out slowly and safely, and warm up calmly."
+ },
+ "breath_done": {
+  "de": "Sehr gut gemacht. Atme jetzt ganz normal und ruhig weiter. Bleib noch einen Moment sitzen.",
+  "en": "Well done. Now breathe normally and calmly. Stay seated for a moment."
  }
 }

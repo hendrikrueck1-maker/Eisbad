@@ -7,6 +7,7 @@ import kotlin.math.abs
 
 /**
  * Ablauf: Vorbereitung -> N x (Atmung, Atem halten, Erholungsatem) -> Einstieg -> Kälte.
+ * Je nach Modus läuft nur die Atemübung ("breath"), nur das Eisbad ("cold") oder beides ("both").
  * Die Ansagen passen sich an die gewählten Zeiten an (Halbzeit, Restzeit, Minuten, Motivation).
  */
 class SessionRunner(
@@ -27,16 +28,23 @@ class SessionRunner(
     private fun fmt(sec: Int) = "%d:%02d".format(sec / 60, sec % 60)
 
     suspend fun run() {
-        prep()
-        for (r in 1..s.rounds) {
-            say(if (r == s.rounds && s.rounds > 1) "round_last" else "round_$r")
-            delay(3000)
-            breathing(r)
-            hold(r)
-            recovery(r)
+        val doBreath = s.mode != "cold"
+        val doCold = s.mode != "breath"
+        if (doBreath) {
+            prep()
+            for (r in 1..s.rounds) {
+                say(if (r == s.rounds && s.rounds > 1) "round_last" else "round_$r")
+                delay(3000)
+                breathing(r)
+                hold(r)
+                recovery(r)
+            }
+            if (!doCold) say("breath_done")
         }
-        entry()
-        cold()
+        if (doCold) {
+            entry()
+            cold()
+        }
     }
 
     private suspend fun prep() {
