@@ -1,0 +1,31 @@
+name: Stimme erzeugen
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "elevenlabs oder openai"
+        default: "elevenlabs"
+      voice:
+        description: "ElevenLabs voice_id bzw. OpenAI-Stimme (z. B. onyx)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clips erzeugen
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python3 tools/generate_voice.py --provider "${{ inputs.provider }}" --voice "${{ inputs.voice }}" --lang de en
+      - name: Clips einchecken
+        run: |
+          git config user.name "eisbad-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add app/src/main/assets/voice
+          git commit -m "Sprachclips erzeugt" || echo "nichts zu committen"
+          git push
