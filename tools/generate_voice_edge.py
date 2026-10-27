@@ -19,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import traceback
 import urllib.request
 import wave
 from pathlib import Path
@@ -136,6 +137,7 @@ def run_piper(items):
             ok = target.exists() and target.stat().st_size > 1000
         except Exception as e:
             print("   Fehler:", repr(e))
+            traceback.print_exc()
             if "Download" in str(e):
                 broken.add(s["model"][lang])
             ok = False

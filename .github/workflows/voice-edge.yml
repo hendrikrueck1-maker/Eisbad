@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install edge-tts piper-tts==1.3.0
-      - run: ffmpeg -version | head -1
+      - run: which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
       - name: Clips erzeugen
         run: |
           FORCE=""
