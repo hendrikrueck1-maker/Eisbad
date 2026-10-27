@@ -141,7 +141,7 @@ class SessionRunner(
             if (t in 1 until total && !cues.containsKey(t)) cues[t] = key
         }
         // Restzeit-Ansagen (nur wenn genug Platz nach dem Start)
-        for (rem in listOf(10, 30, 60)) if (total > rem + 20) put(total - rem, "rem_$rem")
+        for (rem in listOf(15, 30, 60)) if (total > rem + 20) put(total - rem, "rem_$rem")
         // Halbzeit
         if (total >= 120) put(total / 2, "cold_halftime")
         // volle Minuten
@@ -154,7 +154,7 @@ class SessionRunner(
         var t = 25
         while (t < total - 25) {
             if (cues.keys.none { abs(it - t) < 10 }) {
-                put(t, "motiv_${k % 10 + 1}"); k++
+                put(t, "motiv_${k % 14 + 1}"); k++
             }
             t += 40
         }

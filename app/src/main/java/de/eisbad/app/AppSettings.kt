@@ -18,7 +18,7 @@ data class AppSettings(
     val breathCues: Boolean = true,
     val acknowledged: Boolean = false,
     val mode: String = "both",
-    val voice: String = "florian",
+    val voice: String = "rauchig",
     val theme: String = "schiefer",
 ) {
     fun save(ctx: Context) {

@@ -1,222 +1,238 @@
 {
  "intro": {
-  "de": "Willkommen. Setz dich bequem hin, schließe die Augen und komm zur Ruhe. Wir starten gleich mit der Atmung.",
-  "en": "Welcome. Sit comfortably, close your eyes and settle in. We'll begin the breathing shortly."
+  "de": "Willkommen. Schön, dass du da bist. Setz dich bequem hin, schließ die Augen und komm ganz bei dir an. Gleich beginnen wir mit der Atmung.",
+  "en": "Welcome. I'm glad you're here. Sit comfortably, close your eyes and arrive fully in this moment. We'll begin the breathing shortly."
  },
  "round_1": {
-  "de": "Runde eins.",
-  "en": "Round one."
+  "de": "Runde eins. Es geht los.",
+  "en": "Round one. Here we go."
  },
  "round_2": {
-  "de": "Runde zwei.",
-  "en": "Round two."
+  "de": "Runde zwei. Es geht los.",
+  "en": "Round two. Here we go."
  },
  "round_3": {
-  "de": "Runde drei.",
-  "en": "Round three."
+  "de": "Runde drei. Es geht los.",
+  "en": "Round three. Here we go."
  },
  "round_4": {
-  "de": "Runde vier.",
-  "en": "Round four."
+  "de": "Runde vier. Es geht los.",
+  "en": "Round four. Here we go."
  },
  "round_5": {
-  "de": "Runde fünf.",
-  "en": "Round five."
+  "de": "Runde fünf. Es geht los.",
+  "en": "Round five. Here we go."
  },
  "round_6": {
-  "de": "Runde sechs.",
-  "en": "Round six."
+  "de": "Runde sechs. Es geht los.",
+  "en": "Round six. Here we go."
  },
  "round_last": {
-  "de": "Letzte Runde. Gib alles.",
-  "en": "Final round. Give it everything."
+  "de": "Letzte Runde. Gib noch einmal alles, du bist großartig.",
+  "en": "Final round. Give it everything, you're doing wonderfully."
  },
  "breath_start": {
-  "de": "Atme tief in den Bauch ein, und lass locker wieder los. Finde deinen Rhythmus.",
-  "en": "Breathe deep into your belly, then let go and relax. Find your rhythm."
+  "de": "Atme tief in den Bauch ein, und lass ganz locker wieder los. Kein Druck. Finde deinen Rhythmus.",
+  "en": "Breathe deep into your belly, and let go, nice and loose. No pressure. Find your rhythm."
  },
  "breath_third": {
-  "de": "Sehr gut. Bleib in deinem Rhythmus.",
-  "en": "Very good. Stay in your rhythm."
+  "de": "Sehr schön. Genau so. Bleib in deinem Rhythmus.",
+  "en": "Beautiful. Just like that. Stay in your rhythm."
  },
  "breath_twothirds": {
-  "de": "Du machst das stark. Noch ein paar Atemzüge.",
-  "en": "You're doing great. A few more breaths."
+  "de": "Das machst du großartig. Spür die Energie in deinem Körper. Noch ein paar Atemzüge.",
+  "en": "You're doing great. Feel the energy in your body. A few more breaths."
  },
  "breath_last": {
-  "de": "Die letzten Atemzüge. Volle Kraft.",
-  "en": "The last few breaths. Full power."
+  "de": "Die letzten Atemzüge. Volle Kraft. Du bist klasse.",
+  "en": "The last few breaths. Full power. You're amazing."
  },
  "breath_exhale_hold": {
-  "de": "Jetzt ausatmen, und halte den Atem an. Lass alle Spannung los.",
-  "en": "Now exhale and hold your breath. Let go of all tension."
+  "de": "Und jetzt ausatmen. Lass alles los und halte den Atem an. Ganz ruhig. Du musst nichts tun.",
+  "en": "And now breathe out. Let everything go and hold your breath. Very calm. There's nothing to do."
  },
  "hold_30": {
-  "de": "Dreißig Sekunden. Bleib ganz entspannt.",
-  "en": "Thirty seconds. Stay relaxed."
+  "de": "Dreißig Sekunden. Wunderbar. Bleib ganz weich und entspannt.",
+  "en": "Thirty seconds. Wonderful. Stay soft and relaxed."
  },
  "hold_60": {
-  "de": "Eine Minute. Du bist ruhig und stark.",
-  "en": "One minute. You are calm and strong."
+  "de": "Eine Minute. Stark. Spür die Stille in dir.",
+  "en": "One minute. Strong. Feel the stillness inside you."
  },
  "hold_90": {
-  "de": "Neunzig Sekunden. Spüre die Ruhe in dir.",
-  "en": "Ninety seconds. Feel the stillness."
+  "de": "Neunzig Sekunden. Einfach großartig. Alles ist ruhig.",
+  "en": "Ninety seconds. Simply great. Everything is calm."
  },
  "hold_120": {
-  "de": "Zwei Minuten. Großartig.",
-  "en": "Two minutes. Excellent."
+  "de": "Zwei Minuten. Du bist ganz bei dir. Weiter so.",
+  "en": "Two minutes. You are fully with yourself. Keep going."
  },
  "hold_150": {
-  "de": "Zweieinhalb Minuten. Bleib bei dir.",
-  "en": "Two and a half minutes. Stay with yourself."
+  "de": "Zweieinhalb Minuten. Bleib weich. Du machst das fantastisch.",
+  "en": "Two and a half minutes. Stay soft. You're doing fantastically."
  },
  "hold_180": {
-  "de": "Drei Minuten. Beeindruckend.",
-  "en": "Three minutes. Impressive."
+  "de": "Drei Minuten. Beeindruckend. Genieß diese Ruhe.",
+  "en": "Three minutes. Impressive. Enjoy this stillness."
  },
  "hold_210": {
-  "de": "Dreieinhalb Minuten. Sehr stark.",
-  "en": "Three and a half minutes. Very strong."
+  "de": "Dreieinhalb Minuten. Du bist unglaublich stark.",
+  "en": "Three and a half minutes. You are incredibly strong."
  },
  "hold_240": {
-  "de": "Vier Minuten. Absolut stark.",
-  "en": "Four minutes. Absolutely strong."
+  "de": "Vier Minuten. Wahnsinn. Bleib bei dir.",
+  "en": "Four minutes. Amazing. Stay with yourself."
  },
  "hold_270": {
-  "de": "Viereinhalb Minuten. Fast geschafft.",
-  "en": "Four and a half minutes. Almost there."
+  "de": "Viereinhalb Minuten. Fast geschafft. Du bist großartig.",
+  "en": "Four and a half minutes. Almost there. You are wonderful."
  },
  "hold_300": {
-  "de": "Fünf Minuten. Unglaublich.",
-  "en": "Five minutes. Incredible."
+  "de": "Fünf Minuten. Außergewöhnlich. Ich bin beeindruckt.",
+  "en": "Five minutes. Extraordinary. I'm impressed."
  },
  "hold_10s_left": {
-  "de": "Noch zehn Sekunden.",
-  "en": "Ten seconds left."
+  "de": "Noch zehn Sekunden. Du schaffst das locker.",
+  "en": "Ten seconds left. You've got this."
  },
  "hold_end": {
-  "de": "Atme jetzt tief ein und halte die Luft kurz an. Spüre die Fülle.",
-  "en": "Now breathe in deeply and hold briefly. Feel the fullness."
+  "de": "Atme jetzt tief ein und halte die Luft kurz. Spür, wie sich alles füllt. Ganz wunderbar.",
+  "en": "Now breathe in deeply and hold briefly. Feel everything fill up. Just wonderful."
  },
  "recovery_end": {
-  "de": "Und loslassen. Atme aus und entspann dich.",
-  "en": "And release. Breathe out and relax."
+  "de": "Und loslassen. Atme aus. Spür, wie sich dein ganzer Körper entspannt. Gut gemacht.",
+  "en": "And release. Breathe out. Feel your whole body relax. Well done."
  },
  "entry_prepare": {
-  "de": "Atme ruhig und gleichmäßig. Gleich geht es ins Wasser. Steig langsam ein und atme lang aus.",
-  "en": "Breathe calmly and evenly. You're about to enter the water. Step in slowly and breathe out long."
+  "de": "Wunderbar. Atme ruhig und gleichmäßig. Gleich geht es ins Wasser. Geh langsam hinein und atme dabei lang und tief aus.",
+  "en": "Wonderful. Breathe calmly and evenly. You're about to enter the water. Step in slowly and breathe out long and deep."
  },
  "entry_10": {
-  "de": "Gleich startet dein Timer. Atme ruhig.",
-  "en": "Your timer starts soon. Breathe calmly."
+  "de": "Gleich geht es los. Atme ruhig. Du bist bereit.",
+  "en": "We begin in a moment. Breathe calmly. You are ready."
  },
  "cold_start": {
-  "de": "Der Timer läuft. Atme lang aus, und entspann deine Schultern. Du schaffst das.",
-  "en": "The timer is running. Breathe out long and relax your shoulders. You've got this."
+  "de": "Der Timer läuft. Tauch ein und genieß die Kälte. Atme lang aus, entspann deine Schultern. Es geht los.",
+  "en": "The timer is running. Sink in and enjoy the cold. Breathe out long, relax your shoulders. Here we go."
  },
  "min_1": {
-  "de": "Eine Minute geschafft.",
-  "en": "One minute done."
+  "de": "Eine Minute geschafft. Super. Weiter so.",
+  "en": "One minute done. Great. Keep going."
  },
  "min_2": {
-  "de": "Zwei Minuten geschafft.",
-  "en": "Two minutes done."
+  "de": "Zwei Minuten. Wunderbar. Spür, wie ruhig du bist.",
+  "en": "Two minutes. Wonderful. Feel how calm you are."
  },
  "min_3": {
-  "de": "Drei Minuten geschafft.",
-  "en": "Three minutes done."
+  "de": "Drei Minuten. Das ist richtig stark.",
+  "en": "Three minutes. That's really strong."
  },
  "min_4": {
-  "de": "Vier Minuten geschafft.",
-  "en": "Four minutes done."
+  "de": "Vier Minuten. Beeindruckend. Bleib bei deinem Atem.",
+  "en": "Four minutes. Impressive. Stay with your breath."
  },
  "min_5": {
-  "de": "Fünf Minuten geschafft.",
-  "en": "Five minutes done."
+  "de": "Fünf Minuten. Du bist großartig. Genieß es.",
+  "en": "Five minutes. You're great. Enjoy it."
  },
  "min_6": {
-  "de": "Sechs Minuten geschafft.",
-  "en": "Six minutes done."
+  "de": "Sechs Minuten. Unglaublich. Weiter so.",
+  "en": "Six minutes. Incredible. Keep it up."
  },
  "min_7": {
-  "de": "Sieben Minuten geschafft.",
-  "en": "Seven minutes done."
+  "de": "Sieben Minuten. Du bist ganz tief in deiner Ruhe.",
+  "en": "Seven minutes. You're deep in your calm."
  },
  "min_8": {
-  "de": "Acht Minuten geschafft.",
-  "en": "Eight minutes done."
+  "de": "Acht Minuten. Stark. Einfach stark.",
+  "en": "Eight minutes. Strong. Simply strong."
  },
  "min_9": {
-  "de": "Neun Minuten geschafft.",
-  "en": "Nine minutes done."
+  "de": "Neun Minuten. Fast zehn. Du bist ein Wahnsinn.",
+  "en": "Nine minutes. Almost ten. You're amazing."
  },
  "min_10": {
-  "de": "Zehn Minuten geschafft.",
-  "en": "Ten minutes done."
+  "de": "Zehn Minuten. Außergewöhnlich. Ich ziehe den Hut.",
+  "en": "Ten minutes. Extraordinary. I take my hat off to you."
  },
  "cold_halftime": {
-  "de": "Halbzeit. Du machst das großartig.",
-  "en": "Halfway there. You're doing great."
+  "de": "Halbzeit. Du machst das großartig. Spür die Kälte, und genieß sie.",
+  "en": "Halfway there. You're doing great. Feel the cold, and enjoy it."
  },
  "rem_60": {
-  "de": "Noch eine Minute. Atme ruhig weiter.",
-  "en": "One minute left. Keep breathing calmly."
+  "de": "Noch eine Minute. Super, du hast schon so viel geschafft. Weiter so.",
+  "en": "One minute left. Great, you've already done so much. Keep going."
  },
  "rem_30": {
-  "de": "Noch dreißig Sekunden. Bleib stark.",
-  "en": "Thirty seconds left. Stay strong."
+  "de": "Noch dreißig Sekunden. Du bist stark. Atme ruhig weiter.",
+  "en": "Thirty seconds left. You are strong. Keep breathing calmly."
  },
- "rem_10": {
-  "de": "Noch zehn Sekunden. Gleich hast du es geschafft.",
-  "en": "Ten seconds left. You're almost there."
+ "rem_15": {
+  "de": "Noch fünfzehn Sekunden. Du bist Klasse.",
+  "en": "Fifteen seconds left. You're fantastic."
  },
  "motiv_1": {
-  "de": "Atme lang aus. Die Kälte kann dir nichts anhaben.",
-  "en": "Breathe out long. The cold cannot hurt you."
+  "de": "Spür die Kälte. Genieß sie.",
+  "en": "Feel the cold. Enjoy it."
  },
  "motiv_2": {
-  "de": "Bleib ruhig. Du bist stärker als die Kälte.",
-  "en": "Stay calm. You are stronger than the cold."
+  "de": "Atme lang aus. Die Kälte gehört zu dir.",
+  "en": "Breathe out long. The cold is part of you."
  },
  "motiv_3": {
-  "de": "Entspann dein Gesicht und deine Schultern.",
-  "en": "Relax your face and your shoulders."
+  "de": "Entspann dein Gesicht und deine Schultern. Ganz weich.",
+  "en": "Relax your face and your shoulders. Nice and soft."
  },
  "motiv_4": {
-  "de": "Tief in den Bauch atmen. Ganz langsam.",
-  "en": "Breathe deep into your belly. Nice and slow."
+  "de": "Du machst das wunderbar. Bleib bei deinem Atem.",
+  "en": "You're doing wonderfully. Stay with your breath."
  },
  "motiv_5": {
-  "de": "Du hast die Kontrolle. Die Kälte geht vorüber.",
-  "en": "You are in control. The cold will pass."
+  "de": "Du bist ruhig. Du bist stark. Alles ist gut.",
+  "en": "You are calm. You are strong. All is well."
  },
  "motiv_6": {
   "de": "Jeder Atemzug macht dich ruhiger.",
   "en": "Every breath makes you calmer."
  },
  "motiv_7": {
-  "de": "Spüre deine Stärke.",
-  "en": "Feel your strength."
+  "de": "Wow, du bist richtig stark. Spür diese Kraft.",
+  "en": "Wow, you're really strong. Feel that power."
  },
  "motiv_8": {
-  "de": "Bleib bei deinem Atem.",
-  "en": "Stay with your breath."
+  "de": "Lass die Kälte einfach durch dich hindurchfließen.",
+  "en": "Just let the cold flow through you."
  },
  "motiv_9": {
-  "de": "Du machst das hervorragend.",
-  "en": "You're doing excellently."
+  "de": "Genau so. Du hast alles unter Kontrolle.",
+  "en": "Exactly like that. You are in full control."
  },
  "motiv_10": {
-  "de": "Lass los und atme lang aus.",
-  "en": "Let go and breathe out long."
+  "de": "Bleib ganz bei dir. Nur du und dein Atem.",
+  "en": "Stay completely with yourself. Just you and your breath."
+ },
+ "motiv_11": {
+  "de": "Das ist dein Moment. Genieß ihn.",
+  "en": "This is your moment. Enjoy it."
+ },
+ "motiv_12": {
+  "de": "Großartig. Du gehst über das hinaus, was du dir zugetraut hast.",
+  "en": "Brilliant. You're going beyond what you thought possible."
+ },
+ "motiv_13": {
+  "de": "Lass los und atme lang aus. Die Kälte geht vorüber, und du bleibst ganz ruhig.",
+  "en": "Let go and breathe out long. The cold will pass, and you stay perfectly calm."
+ },
+ "motiv_14": {
+  "de": "Stark. Einfach stark. Weiter so.",
+  "en": "Strong. Simply strong. Keep going."
  },
  "cold_end": {
-  "de": "Zeit. Hervorragend gemacht. Steig jetzt langsam und sicher aus dem Wasser und wärme dich in Ruhe auf.",
-  "en": "Time. Well done. Now step out slowly and safely, and warm up calmly."
+  "de": "Und Zeit. Das war großartig. Ich bin stolz auf dich. Steig jetzt langsam und sicher aus dem Wasser und wärm dich in Ruhe auf.",
+  "en": "And time. That was wonderful. I'm proud of you. Now step out slowly and safely, and warm up in your own time."
  },
  "breath_done": {
-  "de": "Sehr gut gemacht. Atme jetzt ganz normal und ruhig weiter. Bleib noch einen Moment sitzen.",
-  "en": "Well done. Now breathe normally and calmly. Stay seated for a moment."
+  "de": "Wunderbar gemacht. Atme jetzt ganz normal und ruhig weiter. Bleib noch einen Moment sitzen und spür nach.",
+  "en": "Beautifully done. Now breathe normally and calmly. Stay seated a moment longer and feel the afterglow."
  }
 }

@@ -148,6 +148,9 @@ fun SettingsScreen(onThemeChange: (String) -> Unit) {
     LaunchedEffect(s) { s.save(ctx) }
 
     val voiceSets = remember { loadVoiceSets(ctx) }
+    LaunchedEffect(Unit) {
+        if (voiceSets.isNotEmpty() && voiceSets.none { it.id == s.voice }) s = s.copy(voice = voiceSets[0].id)
+    }
     val scope = rememberCoroutineScope()
     val previewer = remember { VoicePlayer(ctx, PhraseBook(ctx)) }
     var previewJob by remember { mutableStateOf<Job?>(null) }

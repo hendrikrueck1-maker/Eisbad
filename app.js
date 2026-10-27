@@ -14,7 +14,7 @@
   const DEFAULTS = {
     rounds: 3, breaths: 30, breathSec: 3.5, holdSec: 90, holdOpen: false, recoverySec: 15,
     prepSec: 10, entrySec: 45, coldSec: 180, lang: 'de', voiceVol: 1, musicVol: 0.5,
-    breathCues: true, ack: false, mode: 'both', voice: 'florian', theme: 'schiefer',
+    breathCues: true, ack: false, mode: 'both', voice: 'rauchig', theme: 'schiefer',
   };
   const SESSION_KEYS = ['rounds', 'breaths', 'breathSec', 'holdSec', 'holdOpen', 'recoverySec', 'entrySec', 'coldSec'];
   const PRESETS = {
@@ -381,12 +381,12 @@
   function coldCues(total) {
     const cues = new Map();
     const put = (t, key) => { if (t >= 1 && t < total && !cues.has(t)) cues.set(t, key); };
-    [10, 30, 60].forEach((rem) => { if (total > rem + 20) put(total - rem, 'rem_' + rem); });
+    [15, 30, 60].forEach((rem) => { if (total > rem + 20) put(total - rem, 'rem_' + rem); });
     if (total >= 120) put(Math.floor(total / 2), 'cold_halftime');
     for (let m = 1; m * 60 < total - 15 && m <= 10; m++) put(m * 60, 'min_' + m);
     let k = 0;
     for (let t = 25; t < total - 25; t += 40) {
-      if (![...cues.keys()].some((c) => Math.abs(c - t) < 10)) { put(t, 'motiv_' + ((k % 10) + 1)); k++; }
+      if (![...cues.keys()].some((c) => Math.abs(c - t) < 10)) { put(t, 'motiv_' + ((k % 14) + 1)); k++; }
     }
     return cues;
   }

@@ -1,36 +1,31 @@
 {
  "sets": [
   {
-   "id": "florian",
-   "label": "Florian – warm",
-   "de": "de-DE-FlorianMultilingualNeural",
-   "en": "en-US-AndrewNeural",
-   "rate": "-8%",
-   "pitch": "-2Hz"
+   "id": "tief",
+   "label": "Tief – ruhig",
+   "engine": "piper",
+   "model": { "de": "de_DE-thorsten-high", "en": "en_US-ryan-high" },
+   "length_scale": 1.2,
+   "pitch": 0.9,
+   "fx": "warm"
+  },
+  {
+   "id": "rauchig",
+   "label": "Rauchig – dunkel",
+   "engine": "piper",
+   "model": { "de": "de_DE-thorsten-high", "en": "en_US-ryan-high" },
+   "length_scale": 1.25,
+   "pitch": 0.84,
+   "fx": "smoky"
   },
   {
    "id": "killian",
-   "label": "Killian – klar",
+   "label": "Killian – dunkel",
+   "engine": "edge",
    "de": "de-DE-KillianNeural",
    "en": "en-GB-RyanNeural",
-   "rate": "-8%",
-   "pitch": "-4Hz"
-  },
-  {
-   "id": "seraphina",
-   "label": "Seraphina – sanft",
-   "de": "de-DE-SeraphinaMultilingualNeural",
-   "en": "en-US-AvaNeural",
-   "rate": "-6%",
-   "pitch": "+0Hz"
-  },
-  {
-   "id": "katja",
-   "label": "Katja – freundlich",
-   "de": "de-DE-KatjaNeural",
-   "en": "en-US-JennyNeural",
-   "rate": "-6%",
-   "pitch": "+0Hz"
+   "rate": "-18%",
+   "pitch": "-30Hz"
   }
  ]
 }
