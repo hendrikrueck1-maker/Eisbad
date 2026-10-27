@@ -1,4 +1,4 @@
-const CACHE = 'eisbad-__BUILD__';
+const CACHE = 'eisbad-v1';
 const CORE = ['./', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'phrases.json',
   'icons/icon-192.png', 'icons/icon-512.png'];
 
@@ -46,6 +46,10 @@ self.addEventListener('fetch', (e) => {
     const hit = await caches.match(req, { ignoreVary: true });
     if (hit) {
       const range = req.headers.get('range');
+      if (!/\.mp3$/.test(req.url)) {
+        // App-Dateien: aus dem Cache, im Hintergrund aktualisieren
+        fetch(req).then(async (r) => { if (r.status === 200) (await caches.open(CACHE)).put(req, r); }).catch(() => {});
+      }
       return range ? rangeResponse(hit, range) : hit;
     }
     try {

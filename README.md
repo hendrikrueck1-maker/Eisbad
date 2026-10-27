@@ -45,10 +45,8 @@ Verlauf/Statistik, Atemhalte-Messung, Profile, App-Oberfläche in English.
 5. ZIP entpacken, `app-debug.apk` öffnen und installieren (Installation aus dieser Quelle erlauben).
 
 ## PWA-Version (empfohlen fürs Handy)
-Ordner `web/` ist eine installierbare Web-App (offline-fähig, mit Verlauf, Profilen, Export).
-Sie wird bei jedem Push per GitHub Pages veröffentlicht (Workflow "PWA veröffentlichen"):
+Die Dateien im Repo-Root (index.html, app.js, sw.js ...) sind eine installierbare Web-App (offline-fähig, mit Verlauf, Profilen, Export).
+GitHub Pages (Branch main, Root) liefert sie direkt aus:
 `https://<benutzername>.github.io/eisbad/`
-Einmalig nötig: Repo auf **Public** stellen (Pages ist für private Repos nur im Bezahltarif verfügbar) und unter
-Settings → Pages → Source **GitHub Actions** wählen. Im Chrome-Menü "App installieren" bzw. "Zum Startbildschirm".
 Schnelltest: URL mit `?speed=20` öffnen, dann läuft eine Session 20-fach schneller.
 Stimme kostenlos neu erzeugen: `pip install edge-tts && python3 tools/generate_voice_edge.py --force`
